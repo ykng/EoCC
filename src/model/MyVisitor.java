@@ -4,64 +4,56 @@ import java.util.List;
 
 import org.eclipse.jdt.core.dom.*;
 
+/*
+	基本的に「記述」数をカウントしている。
+	例えば、配列のアクセスにおいて、for(i=0; i<10; i++) { num[i] = i }
+	とかあった場合は、配列にアクセスする本当の数は10だが、
+	このプログラムは記述数として１回だけとカウントしている。
+	=>　実際のアクセス数は別で用意するしかない
+ */
+
 public class MyVisitor extends ASTVisitor{
 
 	int methodCounter = 0;
 	Characteristics c = new Characteristics();
-//	Characteristics cmap = new Characteristics();
-//	Characteristics cred = new Characteristics();
-//	Status status = Status.OTHER;
-
-/*
-	public void countUp(String param) {
-		switch(status) {
-			case MAP :
-				cmap.countUp(param);
-				break;
-			case REDUCE :
-				cred.countUp(param);
-				break;
-			case OTHER:
-				break;
-		}
-	}
-*/
 
 	public String out(){
-		// return cmap.out() + cred.out();
 		return c.out();
 	}
 
 	@Override
 	public boolean visit(MethodDeclaration node) {
-/*
-		if (node.getName().getIdentifier().equals("map")) {
-			status = Status.MAP;
-		} else if (node.getName().getIdentifier().equals("reduce")) {
-			status = Status.REDUCE;
-		} else {
-			status = Status.OTHER;
-		}
-*/
 		int nos = 0;
-		if(node.getBody() != null) {
+		if (node.getBody() != null) {
 			List<Statement> statements = node.getBody().statements();
 			nos = StatementExpander.expand(statements).size();
 		}
 		System.out.println("Method " + String.valueOf(methodCounter++) + " : " + String.valueOf(nos) + " sentences.");
 
-		for(int i=0; i<nos; i++){ c.countUp("nos"); }
+		for (int i = 0; i < nos; i++) {
+			c.countUp("nos");
+		}
 
 		return super.visit(node);
 	}
 
+	// 以下の各種visitメソッドの中身を簡潔に記述するためのメソッド。
+	// 冗長さがあまり変わらない気がするため、コメントアウト
+	// nodeを返すのではなく、return super.visit(node)にできるなら価値あり。
+//	private <T extends ASTNode> T countVisit(T node, String param) {
+//		c.countUp(param);
+//		return node;
+//	}
+
 	@Override
+	// 内部クラスのものもカウント。内部クラス自体はノーカウント。
 	public boolean visit(FieldDeclaration node) {
 		c.countUp("field");
 		return super.visit(node);
 	}
 
 	@Override
+	// ""で囲まれたものがあれば、その度にカウント
 	public boolean visit(StringLiteral node) {
 		c.countUp("str");
 		return super.visit(node);
@@ -75,12 +67,15 @@ public class MyVisitor extends ASTVisitor{
 	}
 
 	@Override
+	// 大体は this.~　とあるやつ。
+	// これ特徴量として必要なのか怪しい。
 	public boolean visit(FieldAccess node) {
 		c.countUp("fidAcs");
 		return super.visit(node);
 	}
 
 	@Override
+	// 上にほぼ同じ。
 	public boolean visit(SuperFieldAccess node) {
 		c.countUp("fidAcs");
 		return super.visit(node);
@@ -93,8 +88,9 @@ public class MyVisitor extends ASTVisitor{
 	}
 
 	@Override
-	public boolean visit(CastExpression node) {
+	public boolean visit(QualifiedType node) {
 		c.countUp("cast");
+		System.out.println(node.toString());
 		return super.visit(node);
 	}
 
@@ -145,5 +141,4 @@ public class MyVisitor extends ASTVisitor{
 		c.countUp("newInvoc");
 		return super.visit(node);
 	}
-
 }

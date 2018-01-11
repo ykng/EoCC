@@ -2,7 +2,7 @@ package model;
 
 public class Characteristics {
 
-    int nos, str, var;
+    int nos, str, var, field;
     int fidAcs, arrAcs;
     int cast, ifs, loop, mthInvoc, newInvoc;
 
@@ -10,6 +10,7 @@ public class Characteristics {
         this.nos = 0;			// num of sentence
         this.str = 0;			// string literal
         this.var = 0;			// local variable
+        this.field = 0;         // field
         this.fidAcs = 0;        // field access
         this.arrAcs = 0;		// array access
         this.cast = 0;          // cast
@@ -24,6 +25,7 @@ public class Characteristics {
             case "nos" : this.nos += 1; break;
             case "str" : this.str += 1; break;
             case "var" : this.var += 1; break;
+            case "field" : this.field += 1; break;
             case "fidAcs" : this.fidAcs += 1; break;
             case "arrAcs" : this.arrAcs += 1; break;
             case "cast" : this.cast += 1; break;
@@ -39,6 +41,7 @@ public class Characteristics {
                 .append(String.valueOf(this.nos)).append(",")
                 .append(String.valueOf(this.str)).append(",")
                 .append(String.valueOf(this.var)).append(",")
+                .append(String.valueOf(this.field)).append(",")
                 .append(String.valueOf(this.fidAcs)).append(",")
                 .append(String.valueOf(this.arrAcs)).append(",")
                 .append(String.valueOf(this.cast)).append(",")

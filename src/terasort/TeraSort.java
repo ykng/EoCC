@@ -69,9 +69,7 @@ public class TeraSort extends Configured implements Tool {
       }
       abstract int findPartition(Text key);
       abstract void print(PrintStream strm) throws IOException;
-      int getLevel() {
-        return level;
-      }
+      int getLevel() { return level; }
     }
 
     /**
